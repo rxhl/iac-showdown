@@ -4,17 +4,17 @@ Make sure you have the Terraform CLI installed.
 
 ```bash
 # zip the lambda function
-$ zip ./tflambda.zip tflambda.js
+zip ./tflambda.zip tflambda.js
 
 # initialize working directory
-$ terraform init
+terraform init
 
 # validate the terraform template
-$ terraform validate
+terraform validate
 
 # push the app
-$ terraform apply
+terraform apply
 
 # cleanup
-$ terraform destroy
+terraform destroy
 ```
