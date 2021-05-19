@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Books API using SAM
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 100
+    CodeUri: src/handlers
+
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref BooksTable
+
+Resources:
+  getAllItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.getAllBooks
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: GET
+
+  getByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.getBookById
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: GET
+
+  putItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.createBook
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: POST
+
+  BooksTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+Outputs:
+  WebEndpoint:
+    Description: 'API Gateway endpoint URL for Prod stage'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
